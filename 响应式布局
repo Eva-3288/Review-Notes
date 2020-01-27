@@ -1,0 +1,138 @@
+@[TOC](响应式布局)
+# 1、响应式布局-viewport
+##  什么是viewport
+viewport 是==用户网页的可视区域==。
+viewport 是展示的==html区域，而不是手机屏幕区域==，我们==设置viewport宽度，其实是设置的html页面的宽度==，和手机屏幕宽度没有关系；
+可以认为： ==**viewport宽度 就是 html宽度**==；
+
+在pc端：
+==viewport区域的宽度==（即html的宽度）==和 浏览器可视区域的宽度 是相同==的，如果viewport区域（html）里有一个盒子（eg:div)的宽度超过了viewport的宽度，那么当前的html页面默认就出现横向滚动条。
+
+==**pc端：viewport宽度 = 浏览器可视区宽度**==（也就是 html宽度 = 浏览器可视区宽度）
+
+移动端：
+==手机宽度 不等于 viewport宽度==，大部分手机默认viewport值是980，还有很小一部分默认VP是1024；
+##  设置viewport
+移动设备上，当**viewport值 > 手机设备宽度** 的时候，如果想把页面在手机屏幕上全部看到，需要==缩放vp的比例==（初始缩放比例）
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2020012610172841.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0V2YTMyODg=,size_16,color_FFFFFF,t_70)
+指定 当前页面区域的宽度（viewport宽度） 和 手机屏幕宽度 保持一致(html页面和手机屏幕一样宽)：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200126113519484.png)
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,maximum-scale= 1.0,minimum-scale=1.0"> 
+```
+ -  **width=device-width** ：viewport宽度 等于设备宽度；width：控制 viewport 的大小，可以指定的一个值，如 600，或者特殊的值，如 device-width为设备的宽度（单位为缩放为 100% 时的 CSS 的像素）。；
+ -  **initial-scale=1.0** ： 初始缩放比例为1，也即是当页面第一次 load 的时候缩放比例；
+ -  **user-scalable=no** ： 用户是否可以手动缩放,yes/no；
+ -  maximum-scale= 1.0 ：允许用户缩放到的最大比例；
+ -  minimum-scale=1.0 ：允许用户缩放到的最小比例
+# 2、响应式布局-dpi适配
+dpi(dots per inch)屏幕密度，是一个量度单位，用于点阵数位影像，意思是指每一英寸长度中，取样或可显示或输出点的数目。
+##  物理像素[设备像素]、逻辑像素[css像素]、设计像素
+
+- ==物理像素[设备像素]==：设备屏幕实际拥有的像素点。移动设备出厂时自带的不同像素。
+- ==逻辑像素[css像素]==：反映在CSS/JS代码里的像素点数，==设备独立像素==。用浏览器的screen对象可以知道其逻辑像素，`screen.width`和`screen.height`。
+==**设备像素比**==（Device Pixel Ratio, DPR）：一个==设备的物理像素与逻辑像素之比==，用`window.devicePixelRatio`来检测设备像素比。
+
+> 其实以前CSS里写个1px，屏幕就给你渲染成1个实际的像素点，DPR=1，多么简单自然~
+> 
+> 但是后来事情起了变化，搞事的就是==Retina技术==，这种技术使用4个乃至更多物理像素来渲染1个逻辑像素，这样一来，==同样的CSS代码设置的尺寸，在Retina和非Retina屏幕上看起来大小是一样的，但在Retina屏幕上要精细得多==。
+> ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200126142622503.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0V2YTMyODg=,size_16,color_FFFFFF,t_70)
+在Retian屏上，DPR不再是1，而是大于1，比如2（iPhone 5 6 7 8）或3（iPhone 6 Plus等一系列Plus）或者为非整数（一些Android机）。
+
+- 设计像素
+
+设计像素来源于奇葩的iPhone 6 Plus，它的==实际物理像素点个数是`1080*1920`==，但如果你截个屏，你会发现截屏图片的宽高是`1242*2208`；浏览器的screen对象会告诉你，6 Plus的逻辑像素是`414*736`，正好是截屏宽度的三分之一，window.devicePixelRatio值也为3。
+
+所以现在我们有了3种不同的像素值？什么情况？
+
+是这样的，==iPhone 6 Plus系统定义的屏幕像素就是`1242*2208`，系统会自动把这些像素点塞进`1080*1920`个实际像素点来渲染==，这个过程对于开发者是透明的，无需理会。
+
+所以对于前端来说，==可以直接把1242视为6 Plus的“物理像素”，包括UE小姐姐们出图也是以1242为标准的，因此不妨把1242*2208称为6 Plus的“**设计像素**”==。
+
+> 当初苹果公司在确定6 Plus的DRP时，纠结了半天：选2吧，同样的字号在6
+> Plus上看起来比6更小，不好；选3吧，字又显得太大了，导致一屏能展示的内容还没有6多；最适合视觉的DRP值是2.46，但这样一个数字能把设计师和程序员们逼疯。最后就想出了引入“设计像素”这样一个两全其美的方案，既让开发者开心，又让用户爽，岂不美哉？
+
+## 关于移动端1px边框问题
+现在Retina技术在移动设备上已经成了标配，所以前端攻城狮必须直面如下事实：
+
+- 想画个1px的下边框，但屏幕硬是塞给你一条宽度为2—3个物理像素的线。
+- 你没法像安卓或iOS的同事那样直接操纵物理像素点。
+
+这就是初级前端面试必考题之“1px边框问题”的由来，这个问题最推崇的方法还是利用CSS3的`transform: scale(0.5/0.33)`，因为简单直接、适用性和兼容性好
+
+参考：[移动端 1px 像素问题及解决办法](https://www.jianshu.com/p/31f8907637a6) 、[CSS中的px与物理像素、逻辑像素、1px边框问题](https://www.cnblogs.com/xiaocaiyuxiaoniao/p/10156680.html)
+
+###  移动端1px边框问题的由来
+
+在开发中，为什么移动端CSS里面写了1px，实际上看起来比1px粗？这是==因为 devicePixelRatio 特性导致==，iPhone的 `devicePixelRatio==2`，而 border-width: 1px; 描述的是设备独立像素，所以，border被放大到物理像素2px显示，在iPhone上就显得较粗。
+
+> 
+> 了解 ==设备物理像素==[设备像素] &==逻辑像素==[CSS像素]  的同学应该很容易理解，其实这两个px的含义其实是不一样的，**UI设计师要求的1px是指设备的物理像素1px，而CSS里记录的像素是逻辑像素**，它们之间存在一个比例关系：==设备像素比DPR==，通常可以用 javascript 中的 `window.devicePixelRatio `来获取，也可以用媒体查询的 `-webkit-min-device-pixel-ratio` 来获取。当然，比例多少与设备相关。
+
+###   1px边框解决方案
+1、transform: scale(0.5) 方案 - 推荐: 很灵活
+
+1.) 设置height: 1px，根据媒体查询结合transform缩放为相应尺寸。
+```css
+div {
+    height:1px;
+    background:#000;
+    -webkit-transform: scaleY(0.5);
+    -webkit-transform-origin:0 0;
+    overflow: hidden;
+}
+```
+2.) 用::after和::befor,设置border-bottom：1px solid #000,然后在缩放-webkit-transform: scaleY(0.5);可以实现两根边线的需求
+```css
+div::after{
+    content:'';width:100%;
+    border-bottom:1px solid #000;
+    transform: scaleY(0.5);
+}
+```
+3.) 用::after设置border：1px solid #000; width:200%; height:200%,然后再缩放scaleY(0.5); 优点可以实现圆角，京东就是这么实现的，缺点是按钮添加active比较麻烦。
+```css
+.div::after {
+    content: '';
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+    -webkit-transform: scale(0.5,0.5);
+    transform: scale(0.5,0.5);
+    -webkit-transform-origin: top left;
+}
+```
+2、媒体查询 + transfrom 对方案1的优化
+
+```css
+/* 2倍屏 */
+@media only screen and (-webkit-min-device-pixel-ratio: 2.0) {
+    .border-bottom::after {
+        -webkit-transform: scaleY(0.5);
+        transform: scaleY(0.5);
+    }
+}
+/* 3倍屏 */
+@media only screen and (-webkit-min-device-pixel-ratio: 3.0) {
+    .border-bottom::after {
+        -webkit-transform: scaleY(0.33);
+        transform: scaleY(0.33);
+    }
+}
+```
+# 3、响应式布局-rem
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2020012621014488.png)
+
+
+
+
+
+
+
+
+
