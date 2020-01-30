@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>匀速运动</title>
+    <style>
+        /* 给div一个绝对定位，控制物体运动，就是改变物体的top 或者left  */
+        div{
+            width:100px;
+            height:100px;
+            background:red;
+            position:absolute;
+            top:0px;
+            /* left:0; */
+            left:800px;
+
+        }
+        .targetLine{
+            position:absolute;
+            left:500px;
+            width:1px;
+            height:300px;
+            background:#000;
+        }
+        #btn{
+            margin-top:110px;
+        }
+    </style>
+</head>
+<body>
+    <div></div>
+    <span class="targetLine"></span>
+    <button id="btn">运动</button>
+    <!-- 点击btn让div运动 -->
+    <script>
+    // 通过js 让div匀速直线运动
+    let oDiv = document.getElementsByTagName('div')[0],
+        oBtn = document.getElementById('btn');
+        let timer = null;
+        oBtn.onclick = function(){   //点击时触发函数
+            // 运动是状态的连续改变，稳定的连续的变化=> 匀速的运动
+            // 不间断的执行一个函数 -- setInterval(func,time时间间隔)--定时器
+            clearInterval(timer);  //点击函数在开启定时器前先取消上一次的定时器
+            let iSpeed = 500 - oDiv.offsetLeft > 0 ? 4 :-4;  //在左侧就一直加offsetLeft，在右边就减少offsetLeft
+            let iWidth = 500 - oDiv.offsetLeft > 0 ? oDiv.offsetWidth : 0;   //500 - oDiv.offsetLeft > 0 判断左右，左边就多减去一个div宽度
+             timer = setInterval(function(){   //每个定时器开启后都会返回一个唯一的标识，可以拿到这个标识来取消定时器
+                // 先判断当前位置是否到了目标点
+
+                if(Math.abs(500 - oDiv.offsetLeft - iWidth) < Math.abs(iSpeed) ){   //Math.abs() 取绝对值
+                    clearInterval(timer);
+                    oDiv.style.left = 500 - iWidth + 'px';
+                }else{
+                    oDiv.style.left = oDiv.offsetLeft + iSpeed+'PX';   //offsetTop=元素距上边界高度+margin
+                }
+            },30);  //每间隔30毫秒执行一次函数
+
+        }
+        // 在运动的时候多次点击btn，运动的会越来越快，因为会每点击一次函数还多一次定时器穿插执行
+        // 多个定时器在起作用，我们可以只让一个定时器起作用
+
+    </script>
+</body>
+</html>

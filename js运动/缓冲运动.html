@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>缓冲运动</title>
+</head>
+<style>
+div{
+    width:100px;
+    height:100px;
+    position:absolute;
+    background:red;
+    left:0px;
+    top:0px;
+}
+span{
+    position:absolute;
+    left:500px;
+    width:1px;
+    height:300px;
+    background: #000;
+}
+#btn{
+    margin-top:110px;
+}
+</style>
+<body>
+    <div></div>
+    <span class="targetLine"></span>
+    <button id="btn">运动</button>
+    <script>
+    //缓冲运动：速度逐渐减小的运动，这样停下来不会太生硬； 物体的速度 距离目标点越近，速度越小，当达到目标的时候 速度为0
+    let oDiv = document.getElementsByTagName('div')[0];
+    let oBtn = document.getElementById('btn');
+
+    oBtn.onclick = function(){
+        startMove(oDiv,500)
+    }
+    function startMove(dom,target){
+        clearInterval(timer);
+        var iSpeed = (target - dom.offsetLeft)/10;   //距离目标点越近，速度越小
+        var timer = setInterval(function(){
+            if(target - dom.offsetLeft > iSpeed){
+                dom.style.left  = target;
+            }else{
+                dom.style.left =  dom.offsetLeft + iSpeed + 'px';
+            }
+        },30);
+    }
+    </script>
+</body>
+
+</html>
