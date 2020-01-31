@@ -13,7 +13,7 @@ div{
     height:100px;
     position:absolute;
     background:red;
-    left:0px;
+    left:800px;
     top:0px;
 }
 span{
@@ -40,13 +40,19 @@ span{
         startMove(oDiv,500)
     }
     function startMove(dom,target){
-        clearInterval(timer);
-        var iSpeed = (target - dom.offsetLeft)/10;   //距离目标点越近，速度越小
+        clearInterval(timer);  //开始之前清除之前定时器
         var timer = setInterval(function(){
-            if(target - dom.offsetLeft > iSpeed){
-                dom.style.left  = target;
+            
+            var iSpeed = (target - dom.offsetLeft)/10 ;   //距离目标点越近，速度越小，最后到达目标的时候速度为0了
+            iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed); 
+            // Math.ceil()向上取整 ，让速度最小是1，因为像素不支持小数
+            // Math.ceil(0.4)  为1 ； Math.ceil(-0.4) 为-0   所以为负数时应用Math.floor(-o.4) 为-1
+            console.log(iSpeed);
+            if(target == dom.offsetLeft ){
+                clearInterval(timer);  //到了之后清除定时器
             }else{
-                dom.style.left =  dom.offsetLeft + iSpeed + 'px';
+                dom.style.left =  dom.offsetLeft + iSpeed + 'px';   //最后到达目标速度为0了，也就不会一直增加了，所以会自己停止增加，不需要判断停止增加
+            // dom.style.left 295.72 是295  + 0.71  变295.71  最后还是295
             }
         },30);
     }
